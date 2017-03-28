@@ -1,5 +1,4 @@
 
-
 WITH ctevar
      AS (SELECT ca.CA_Name                                         AS [Name of the Corporate Agent],
                 ca.COR_Number                                      AS [COR Number],

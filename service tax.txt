@@ -1,0 +1,22 @@
+WITH ctevar
+     AS (SELECT ca.CA_Name                                         AS [Name of the Corporate Agent],
+                ca.COR_Number                                      AS [COR Number],
+                Sum(led.Amount)                                    AS [Total ST Recovered for CORs issued on or after 01.04.2016],
+                (SELECT dbo.Currentbalanceca(led.CorporateUserID)) AS [Balance in Web Wallet as on Date (27.04.2017)]
+         FROM   TblLedgerTransaction_Corporates led,
+                TblCARegister_F ca
+         WHERE  led.CorporateUserID = ca.Corporate_UserID
+                AND ca.Record_Type = 'CA'
+                AND led.ActivityID = 27 -- For Service tax
+                AND Cast(led.TransactionDate AS DATE) >= '2016/04/01'
+                -- AND Cast(led.TransactionDate AS DATE) <= '2016/09/30'
+                AND led.CreditDebit = 'D'
+         GROUP  BY ca.CA_Name,
+                   ca.COR_Number,
+                   led.CorporateUserID)
+SELECT ctevar.[Name of the Corporate Agent],
+       ctevar.[COR Number],
+       ctevar.[Total ST Recovered for CORs issued on or after 01.04.2016],
+       ctevar.[Balance in web wallet as on date (27.04.2017)],
+       ( ( ctevar.[Total ST Recovered for CORs issued on or after 01.04.2016] ) + ( ctevar.[Balance in Web Wallet as on Date (27.04.2017)] ) ) AS [Balance in web Wallet AFTER RECREDITING THE SERVICE TAX]
+FROM   ctevar 

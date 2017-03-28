@@ -1,0 +1,43 @@
+  public static string ToRupees(this decimal v)
+        {
+            if (v == 0) return "Zero Rupees Only";
+            var units = "|One|Two|Three|Four|Five|Six|Seven|Eight|Nine".Split('|');
+            var teens = "|Eleven|Twelve|Thir#|Four#|Fif#|Six#|Seven#|Eigh#|Nine#".Replace("#", "teen").Split('|');
+            var tens = "|Ten|Twenty|Thirty|Forty|Fifty|Sixty|Seventy|Eighty|Ninety".Split('|');
+            var thou = "|Thousand|M#|B#|Tr#|Quadr#|Quint#|Sex#|Sept#|Oct#".Replace("#", "illion").Split('|');
+            var g = (v < 0) ? "minus " : "";
+            var w = "";
+            var p = 0;
+            var fract = (v.ToString().Split('.'))[1];
+            v = Math.Abs(v);
+            while (v > 0)
+            {
+                int b = (int)(v % 1000);
+                if (b > 0)
+                {
+                    var h = (b / 100);
+                    var t = (b - h * 100) / 10;
+                    var u = (b - h * 100 - t * 10);
+                    var s = ((h > 0) ? units[h] + " Hundred" + ((t > 0 | u > 0) ? " And " : "") : "") + ((t > 0) ? (t == 1 && u > 0) ? teens[u] : tens[t] + ((u > 0) ? "-" : "") : "") + ((t != 1) ? units[u] : ""); s = (((v > 1000) && (h == 0) && (p == 0)) ? " and " : (v > 1000) ? ", " : "") + s; w = s + " " + thou[p] + w;
+                } v = v / 1000; p++;
+            }
+            g = (g + w != "") ? g + w + " Rupees " : "";
+            w = "";
+            p = 0;
+            v = Math.Abs(Convert.ToDecimal(fract));
+            while (v > 0)
+            {
+                int b = (int)(v % 1000);
+                if (b > 0)
+                {
+                    var h = (b / 100);
+                    var t = (b - h * 100) / 10;
+                    var u = (b - h * 100 - t * 10);
+				   var s = ((h > 0) ? units[h] + " Hundred" + ((t > 0 | u > 0) ? " And " : "") : "") + ((t > 0) ? (t == 1 && u > 0) ? teens[u] : tens[t] + ((u > 0) ? "-" : "") : "") + ((t != 1) ? units[u] : "");
+                   s = (((v > 1000) && (h == 0) && (p == 0)) ? " and " : (v > 1000) ? ", " : "") + s; w = s + " " + thou[p] + w;
+               } v = v / 1000; p++;
+           }
+           g += (w != "") ? w + " Paise " : "";
+           g += (g != "") ? " Only " : "";
+           return g;
+       }
